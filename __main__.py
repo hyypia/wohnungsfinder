@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_message(
         chat_id=update.effective_chat.id, text="I'll fetch new flats!"
     )
@@ -27,7 +27,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def check_updates(context: ContextTypes.DEFAULT_TYPE):
+async def check_updates(context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = context.job.chat_id
     new_flats = get_new_flat()
     if new_flats:
@@ -42,7 +42,7 @@ async def check_updates(context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=chat_id, text=text_message)
 
 
-def main():
+def main() -> None:
     application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
     start_handler = CommandHandler("start", start)
