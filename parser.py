@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, TypeAlias
+from typing import Iterable, Literal, TypeAlias
 from dataclasses import dataclass
 import random
 
@@ -64,9 +64,9 @@ def _check_wbs_flat(flat: element.Tag) -> bool:
     return False
 
 
-def _find_element(flat: element.Tag, el: str) -> element.Tag:
-    """Find HTML target element with flat info"""
-    element = flat.find(string=el)
+def _find_element(flat: element.Tag, param_name: str) -> element.Tag:
+    """Find HTML target element with flat parameter"""
+    element = flat.find(string=param_name)
     if element is None:
         raise ParserError
     element_with_data = element.find_parents("tr")[0].td
@@ -98,8 +98,9 @@ def _parse_flat(flat: element.Tag) -> Flat:
     )
 
 
-def get_flats():
+def get_flats() -> list[Flat]:
     all_flats_set = _get_all_flats_set(URL)
+    target_flats = []
     for flat in all_flats_set:
         wbs = _check_wbs_flat(flat)
         qm = _parse_qm_flat(_find_element(flat, "Wohnfläche: "))
@@ -110,8 +111,8 @@ def get_flats():
             and qm <= search_params["max_qm"]
             and rooms <= search_params["max_rooms"]
         ):
-            flats = _parse_flat(flat)
-            print(flats)
+            target_flats.append(_parse_flat(flat))
+    return target_flats
 
 
 if __name__ == "__main__":
