@@ -1,4 +1,5 @@
 __pycache__/
+bot.log
 flats.json
 venv/
 config.py
