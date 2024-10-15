@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import Iterable, Literal, TypeAlias
+from typing import TypeAlias
 from dataclasses import dataclass
-import random
 
-import requests
-from bs4 import BeautifulSoup, element
+from bs4 import element
 
 from config import URL
-from exceptions import BadRequest, ParserError
+from exceptions import ParserError
+from scraper import scrap_all_flats
 
 
 # Search parameters
@@ -32,26 +31,6 @@ class Flat:
     square: float
     rooms: float
     url: FlatUrl
-
-
-def _generate_user_agents() -> dict[Literal["user-agent"], str]:
-    with open("user_agents.txt", "rt") as file:
-        user_agents = file.read().splitlines()
-    random_user_agent = random.choice(user_agents)
-    return {"user-agent": random_user_agent}
-
-
-def _get_response(url: str) -> str:
-    req = requests.get(url, headers=_generate_user_agents())
-    if req.status_code != 200:
-        raise BadRequest
-    return req.text
-
-
-def _get_all_flats_set(url: str) -> element.ResultSet:
-    page = _get_response(url)
-    soup = BeautifulSoup(page, "html.parser").find_all("li", class_="tb-merkflat ipg")
-    return soup
 
 
 def _check_wbs_flat(flat: element.Tag) -> bool:
@@ -99,7 +78,7 @@ def _parse_flat(flat: element.Tag) -> Flat:
 
 
 def get_flats() -> list[Flat]:
-    all_flats_set = _get_all_flats_set(URL)
+    all_flats_set = scrap_all_flats(URL)
     target_flats = []
     for flat in all_flats_set:
         wbs = _check_wbs_flat(flat)
@@ -112,6 +91,7 @@ def get_flats() -> list[Flat]:
             and rooms <= search_params["max_rooms"]
         ):
             target_flats.append(_parse_flat(flat))
+
     return target_flats
 
 

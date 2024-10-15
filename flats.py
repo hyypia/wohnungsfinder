@@ -1,7 +1,3 @@
-# from db import init_db
-# from queries import create_flats_table
-# from config import DB_NAME
-
 from pathlib import Path
 from typing import Iterable
 
@@ -20,6 +16,10 @@ def get_new_flat() -> Iterable[Flat]:
     file_flats = load_flats(JSONFileFlatStorage(Path.cwd() / "flats.json"))
     file_flats_ids = {flat["flat_id"]: True for flat in file_flats}
     new_flats = [flat for flat in flats if flat.flat_id not in file_flats_ids]
+    if new_flats:
+        for flat in new_flats:
+            save_flat(flat, JSONFileFlatStorage(Path.cwd() / "flats.json"))
+
     return new_flats
 
 
