@@ -3,3 +3,4 @@ bot.log
 flats.json
 venv/
 config.py
+.env
