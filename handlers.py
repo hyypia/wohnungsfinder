@@ -38,28 +38,35 @@ async def adjust_min_qm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 async def adjust_max_qm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     min_qm = cast(Message, update.message).text
-    search_params["min_qm"] = float(min_qm)
+    if min_qm is not None:
+        search_params["min_qm"] = float(min_qm)
     await update.message.reply_text(text=templates.to_qm_question)
+
     return ROOMS_MIN
 
 
 async def adjust_min_rooms(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     max_qm = cast(Message, update.message).text
-    search_params["max_qm"] = float(max_qm)
+    if max_qm is not None:
+        search_params["max_qm"] = float(max_qm)
     await update.message.reply_text(text=templates.from_rooms_question)
+
     return ROOMS_MAX
 
 
 async def adjust_max_rooms(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     min_rooms = cast(Message, update.message).text
-    search_params["min_rooms"] = float(min_rooms)
+    if min_rooms is not None:
+        search_params["min_rooms"] = float(min_rooms)
     await update.message.reply_text(text=templates.to_rooms_question)
+
     return SEARCH
 
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     max_rooms = cast(Message, update.message).text
-    search_params["max_rooms"] = float(max_rooms)
+    if max_rooms is not None:
+        search_params["max_rooms"] = float(max_rooms)
 
     await update.message.reply_text(text=templates.end_conversation)
     context.job_queue.run_repeating(
@@ -77,10 +84,5 @@ async def check_updates(context: ContextTypes.DEFAULT_TYPE) -> None:
     new_flats = get_new_flat()
     if new_flats:
         for flat in new_flats:
-            text_message = (
-                f"{flat.address}\n"
-                f"Zimmeranzahl: {flat.rooms}\n"
-                f"Wohnfläche: {flat.square}\n"
-                f"{flat.url}"
-            )
+            text_message = templates.flat_message(flat)
             await context.bot.send_message(chat_id=chat_id, text=text_message)

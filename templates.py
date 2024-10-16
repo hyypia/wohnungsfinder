@@ -1,3 +1,5 @@
+from parser import Flat
+
 greeting = """Hi! I'am a Wohnungsfinder Bot!
 I'll monitoring new flats in Berlin,
 which are provided by the 6 largest
@@ -18,3 +20,12 @@ from_rooms_question = "From what number of rooms?"
 to_rooms_question = "Up to how many rooms?"
 
 end_conversation = "Great! I starting search!"
+
+
+def flat_message(flat: Flat) -> str:
+    return (
+        f"{flat.address}\n"
+        f"Zimmeranzahl: {flat.rooms}\n"
+        f"Wohnfläche: {flat.square}\n"
+        f"{flat.url}"
+    )
