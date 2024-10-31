@@ -1,3 +1,11 @@
+class RequestError(Exception):
+    """Connection Error"""
+
+
+class RequestTimeout(Exception):
+    """Request Timeout"""
+
+
 class ParserError(Exception):
     """Can't find target HTML element"""
 

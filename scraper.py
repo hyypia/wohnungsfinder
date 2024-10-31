@@ -4,7 +4,7 @@ from typing import Literal
 import requests
 from bs4 import BeautifulSoup, element
 
-from exceptions import BadRequest
+from exceptions import BadRequest, RequestError, RequestTimeout
 
 
 def _generate_user_agents() -> dict[Literal["user-agent"], str]:
@@ -15,7 +15,12 @@ def _generate_user_agents() -> dict[Literal["user-agent"], str]:
 
 
 def _get_response(url: str) -> str:
-    req = requests.get(url, headers=_generate_user_agents())
+    try:
+        req = requests.get(url, headers=_generate_user_agents(), timeout=5)
+    except requests.ConnectionError:
+        raise RequestError
+    except requests.Timeout:
+        raise RequestTimeout
     if req.status_code != 200:
         raise BadRequest
     return req.text

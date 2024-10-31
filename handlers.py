@@ -70,7 +70,11 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     await update.message.reply_text(text=templates.end_conversation)
     context.job_queue.run_repeating(
-        check_updates, interval=30, first=0, chat_id=update.message.chat_id
+        check_updates,
+        interval=60,
+        first=0,
+        job_kwargs={"max_instances": 3},
+        chat_id=update.message.chat_id,
     )
     return ConversationHandler.END
 
