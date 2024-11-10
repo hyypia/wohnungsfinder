@@ -10,6 +10,8 @@ if os.path.exists(dotenv_path):
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 
+DEVELOPER_CHAT_ID = os.getenv("DEV_CHAT_ID", "")
+
 DB_NAME = os.getenv("DB_NAME", "")
 
 URL = "https://inberlinwohnen.de/wohnungsfinder/"

@@ -1,7 +1,9 @@
 import logging
+import traceback
 
 from telegram import Update
 from telegram.ext import (
+    ContextTypes,
     ApplicationBuilder,
     CommandHandler,
     ConversationHandler,
@@ -9,7 +11,7 @@ from telegram.ext import (
     filters,
 )
 
-from config import TELEGRAM_TOKEN
+from config import TELEGRAM_TOKEN, DEVELOPER_CHAT_ID
 import handlers
 
 
@@ -20,6 +22,20 @@ logging.basicConfig(
     filemode="w",
 )
 logger = logging.getLogger(__name__)
+
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Log the error and send message to developer"""
+
+    logger.error("Exeption while handling an update:", exc_info=context.error)
+
+    # Get python message about an exception and join stings from list format
+    tb_list = traceback.format_exception(
+        None, context.error, context.error.__traceback__
+    )
+    tb_string = "".join(tb_list)
+
+    await context.bot.send_message(chat_id=DEVELOPER_CHAT_ID, text=tb_string)
 
 
 def main() -> None:
@@ -40,10 +56,11 @@ def main() -> None:
             ],
             handlers.SEARCH: [MessageHandler(filters.TEXT, handlers.search)],
         },
-        fallbacks=[CommandHandler("cancel", handlers.cancel)]
+        fallbacks=[CommandHandler("cancel", handlers.cancel)],
     )
 
     application.add_handler(conv_handlers)
+    application.add_error_handler(error_handler)
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
